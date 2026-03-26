@@ -610,7 +610,8 @@ elif page == "📈 Trend Analysis":
     if df_raw is None:
         st.warning("Upload your Excel file to see trend analysis.")
         st.stop()
-
+        
+    st.write("Columns found:", df_raw.columns.tolist())
     if "YEAR" not in df_raw.columns or "COMPANY" not in df_raw.columns:
         st.error("Excel file must have YEAR and COMPANY columns.")
         st.stop()
