@@ -73,7 +73,9 @@ companies, summary, df_raw = [], {}, None
 
 if json_file:
     raw = json.load(json_file)
-    companies = raw.get("companies", raw if isinstance(raw, list) else [])
+    if isinstance(raw, list):
+        raw = raw[0]
+    companies = raw.get("companies", [])
     summary   = raw.get("processing_summary", {})
 
 if excel_file:
