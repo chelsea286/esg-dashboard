@@ -633,7 +633,7 @@ elif page == "📈 Trend Analysis":
         df_trend = df_raw[df_raw["COMPANY"].isin(sel_companies)][["COMPANY","YEAR",sel_metric]].copy()
         df_trend["YEAR"] = pd.to_numeric(df_trend["YEAR"], errors="coerce")
         df_trend[sel_metric] = pd.to_numeric(df_trend[sel_metric], errors="coerce")
-        df_trend = df_trend.dropna().sort_values(["COMPANY","YEAR"])
+        df_trend = df_trend.dropna(subset=["COMPANY","YEAR"]).sort_values(["COMPANY","YEAR"])
 
         fig = px.line(df_trend, x="YEAR", y=sel_metric, color="COMPANY",
                       markers=True, title=f"{sel_metric} over time",
