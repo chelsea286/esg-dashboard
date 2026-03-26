@@ -611,7 +611,6 @@ elif page == "📈 Trend Analysis":
         st.warning("Upload your Excel file to see trend analysis.")
         st.stop()
         
-    st.write("Columns found:", df_raw.columns.tolist())
     if "YEAR" not in df_raw.columns or "COMPANY" not in df_raw.columns:
         st.error("Excel file must have YEAR and COMPANY columns.")
         st.stop()
@@ -632,8 +631,9 @@ elif page == "📈 Trend Analysis":
 
     if sel_companies and sel_metric:
         df_trend = df_raw[df_raw["COMPANY"].isin(sel_companies)][["COMPANY","YEAR",sel_metric]].copy()
+        df_trend["YEAR"] = pd.to_numeric(df_trend["YEAR"], errors="coerce")
         df_trend[sel_metric] = pd.to_numeric(df_trend[sel_metric], errors="coerce")
-        df_trend = df_trend.dropna()
+        df_trend = df_trend.dropna().sort_values(["COMPANY","YEAR"])
 
         fig = px.line(df_trend, x="YEAR", y=sel_metric, color="COMPANY",
                       markers=True, title=f"{sel_metric} over time",
