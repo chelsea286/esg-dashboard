@@ -50,7 +50,7 @@ def corr_matrix(df, esg_cols, scm_cols):
 # ── Sidebar: file uploads ─────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("## 📊 ESG-SCM Dashboard")
-    st.caption("Indonesia Food & Tobacco")
+    st.caption("Indonesia Consumer Goods Company")
     st.divider()
 
     st.markdown("### Upload Data")
@@ -125,7 +125,7 @@ if page == "🏠 Overview":
                  "Low":"background-color:#052e16;color:#6ee7b7"}
             return m.get(val,"")
 
-        st.dataframe(ov_df.style.applymap(colour_risk, subset=["Risk"]),
+        st.dataframe(ov_df.style.map(colour_risk, subset=["Risk"]),
                      use_container_width=True, height=450)
 
         # Exec summaries
@@ -568,7 +568,7 @@ elif page == "💡 AI Recommendations":
              "Low":"background-color:#052e16;color:#6ee7b7"}
         return m.get(val,"")
 
-    st.dataframe(filtered.style.applymap(colour_priority,subset=["Priority"]),
+    st.dataframe(filtered.style.map(colour_priority,subset=["Priority"]),
                  use_container_width=True, height=500)
 
     st.divider()
