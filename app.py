@@ -587,7 +587,6 @@ PLOT_LAYOUT = dict(
         font=dict(family="DM Mono, monospace", size=11, color="#c8d6e8"),
     ),
     margin=dict(l=16, r=16, t=44, b=16),
-    transition=dict(duration=300, easing="cubic-in-out"),
 )
 
 ACCENT_COLORS = [
@@ -610,7 +609,7 @@ def risk_badge(r):
     icons = {"High": "ph-warning-circle", "Medium": "ph-warning", "Low": "ph-check-circle"}
     icon = icons.get(r, "ph-minus")
     cls = {"High": "badge-high", "Medium": "badge-medium", "Low": "badge-low"}.get(r, "badge-na")
-    return f'<span class="badge {cls}"><i class="{icon}"></i>{r if r != "N/A" else "—"}</span>'
+    return f'<span class="badge {cls}"><i class="ph {icon}"></i>{r if r != "N/A" else "—"}</span>'
 
 def risk_dot(r):
     """Phosphor icon dot indicator."""
@@ -620,14 +619,14 @@ def risk_dot(r):
         "Low": ("ph-check-circle", "#10b981"),
     }
     icon, color = icons.get(r, ("ph-minus", "#374151"))
-    return f'<i class="{icon}" style="color:{color};margin-right:7px;vertical-align:middle;font-size:0.85rem"></i>'
+    return f'<i class="ph {icon}" style="color:{color};margin-right:7px;vertical-align:middle;font-size:0.85rem"></i>'
 
 def metric_card(label, value, icon, delta=None, accent="#5ba3f5"):
     """Custom HTML metric card with icon."""
     delta_html = f'<div class="metric-card-delta">{delta}</div>' if delta else ''
     return f"""
     <div class="metric-card" style="--accent-color:{accent}">
-        <div class="metric-card-icon"><i class="{icon}"></i></div>
+        <div class="metric-card-icon"><i class="ph {icon}"></i></div>
         <div class="metric-card-label">{label}</div>
         <div class="metric-card-value">{value}</div>
         {delta_html}
@@ -647,17 +646,17 @@ def corr_matrix(df, esg_cols, scm_cols):
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-    <div class="sidebar-wordmark"><i class="ph-duotone ph-leaf"></i> ESG · SCM</div>
+    <div class="sidebar-wordmark"><i class="ph ph-duotone ph-leaf"></i> ESG · SCM</div>
     <div class="sidebar-sub">Intelligence Dashboard</div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="section-label"><i class="ph-database"></i> Data Sources</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label"><i class="ph ph-database"></i> Data Sources</div>', unsafe_allow_html=True)
     json_file  = st.file_uploader("n8n JSON output",  type="json",
                                    help="Post-processor output from n8n workflow")
     excel_file = st.file_uploader("Excel data file",  type=["xlsx", "xls"],
                                    help="Original ESG-SCM spreadsheet")
 
-    st.markdown('<div class="section-label" style="margin-top:24px"><i class="ph-compass"></i> Navigation</div>',
+    st.markdown('<div class="section-label" style="margin-top:24px"><i class="ph ph-compass"></i> Navigation</div>',
                 unsafe_allow_html=True)
     page = st.radio("", [
         "Overview",
@@ -672,7 +671,7 @@ with st.sidebar:
     st.markdown("""
     <div style="margin-top:auto;padding-top:40px">
         <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:#1e3a58;letter-spacing:0.05em">
-            <i class="ph-map-pin" style="font-size:0.7rem"></i> INDONESIA · CONSUMER GOODS<br>
+            <i class="ph ph-map-pin" style="font-size:0.7rem"></i> INDONESIA · CONSUMER GOODS<br>
             <span style="margin-left:14px">Food & Tobacco Sector</span>
         </div>
     </div>
@@ -696,7 +695,7 @@ if excel_file:
 if not companies and df_raw is None:
     st.markdown("""
     <div class="hero-section">
-        <i class="ph-duotone ph-chart-pie-slice" style="font-size:3rem;color:#5ba3f5;margin-bottom:16px"></i>
+        <i class="ph ph-duotone ph-chart-pie-slice" style="font-size:3rem;color:#5ba3f5;margin-bottom:16px"></i>
         <h1>ESG · SCM Intelligence</h1>
         <p>Indonesia Consumer Goods — Food & Tobacco Sector<br>
            Upload your data to unlock AI-powered insights</p>
@@ -707,7 +706,7 @@ if not companies and df_raw is None:
     with c1:
         st.markdown("""
         <div class="upload-card">
-            <i class="ph-duotone ph-file-js"></i>
+            <i class="ph ph-duotone ph-file-js"></i>
             <h4>n8n JSON Output</h4>
             <p>Upload your workflow output for AI analysis,<br>
                risk data, and recommendations.</p>
@@ -716,7 +715,7 @@ if not companies and df_raw is None:
     with c2:
         st.markdown("""
         <div class="upload-card">
-            <i class="ph-duotone ph-file-xls"></i>
+            <i class="ph ph-duotone ph-file-xls"></i>
             <h4>Excel Data File</h4>
             <p>Upload your ESG-SCM spreadsheet for correlation<br>
                heatmap, what-if simulator, and trend analysis.</p>
@@ -733,7 +732,7 @@ if page == "Overview":
     st.markdown(f"""
     <div style="font-family:'DM Sans',sans-serif;font-size:0.8rem;color:#3d6282;
                 letter-spacing:0.05em;text-transform:uppercase;margin-top:-10px;margin-bottom:20px">
-        <i class="ph-map-pin" style="font-size:0.75rem"></i> Indonesia · Food &amp; Tobacco &nbsp;·&nbsp; {len(companies)} companies analysed
+        <i class="ph ph-map-pin" style="font-size:0.75rem"></i> Indonesia · Food &amp; Tobacco &nbsp;·&nbsp; {len(companies)} companies analysed
     </div>
     """, unsafe_allow_html=True)
 
@@ -773,7 +772,7 @@ if page == "Overview":
                 accent="#34d399"
             ), unsafe_allow_html=True)
 
-        st.markdown('<div class="fancy-divider"><i class="ph-chart-line-down"></i></div>', unsafe_allow_html=True)
+        st.markdown('<div class="fancy-divider"><i class="ph ph-chart-line-down"></i></div>', unsafe_allow_html=True)
 
         # Overview table
         rows = []
@@ -802,7 +801,7 @@ if page == "Overview":
             height=420,
         )
 
-        st.markdown('<div class="fancy-divider"><i class="ph-note"></i></div>', unsafe_allow_html=True)
+        st.markdown('<div class="fancy-divider"><i class="ph ph-note"></i></div>', unsafe_allow_html=True)
         st.subheader("Executive Summaries")
 
         for c in companies:
@@ -826,7 +825,7 @@ if page == "Overview":
     else:
         st.markdown("""
         <div class="info-panel">
-            <h4><i class="ph-warning"></i> No data loaded</h4>
+            <h4><i class="ph ph-warning"></i> No data loaded</h4>
             <p>Upload your n8n JSON file to see company overview and risk analysis.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -838,14 +837,14 @@ if page == "Overview":
 elif page == "Correlation Heatmap":
     st.title("Correlation Heatmap")
     st.markdown(
-        '<div class="section-label"><i class="ph-chart-scatter"></i> ESG Dimensions vs SCM / Financial Metrics · Pearson r</div>',
+        '<div class="section-label"><i class="ph ph-chart-scatter"></i> ESG Dimensions vs SCM / Financial Metrics · Pearson r</div>',
         unsafe_allow_html=True
     )
 
     if df_raw is None:
         st.markdown("""
         <div class="info-panel">
-            <h4><i class="ph-file-xls"></i> Excel file required</h4>
+            <h4><i class="ph ph-file-xls"></i> Excel file required</h4>
             <p>Upload your ESG-SCM spreadsheet to generate the correlation heatmap.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -947,7 +946,7 @@ elif page == "Company Comparison":
     if df_raw is None and not companies:
         st.markdown("""
         <div class="info-panel">
-            <h4><i class="ph-warning"></i> No data loaded</h4>
+            <h4><i class="ph ph-warning"></i> No data loaded</h4>
             <p>Upload your Excel file and/or n8n JSON to compare companies.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -977,23 +976,19 @@ elif page == "Company Comparison":
                     vals = [pd.to_numeric(row.get(c, 0), errors="coerce") or 0 for c in radar_cols]
                     maxv = [df_raw[c].dropna().apply(pd.to_numeric, errors="coerce").max() for c in radar_cols]
                     norm = [v / m * 100 if m and m > 0 else 0 for v, m in zip(vals, maxv)]
+                    
+                    c = ACCENT_COLORS[i % len(ACCENT_COLORS)]
+                    r_rgb, g_rgb, b_rgb = int(c[1:3], 16), int(c[3:5], 16), int(c[5:7], 16)
+                    
                     fig.add_trace(go.Scatterpolar(
                         r=norm + [norm[0]],
                         theta=radar_cols + [radar_cols[0]],
                         fill="toself",
                         name=str(row["COMPANY"]),
                         opacity=0.65,
-                        line=dict(color=ACCENT_COLORS[i % len(ACCENT_COLORS)], width=1.5),
-                        fillcolor=ACCENT_COLORS[i % len(ACCENT_COLORS)].replace("#", "rgba(") + ",0.08)",
+                        line=dict(color=c, width=1.5),
+                        fillcolor=f"rgba({r_rgb},{g_rgb},{b_rgb},0.08)",
                     ))
-
-                # Fix fillcolor for hex
-                for i, trace in enumerate(fig.data):
-                    c = ACCENT_COLORS[i % len(ACCENT_COLORS)]
-                    r = int(c[1:3], 16)
-                    g = int(c[3:5], 16)
-                    b = int(c[5:7], 16)
-                    trace.fillcolor = f"rgba({r},{g},{b},0.08)"
 
                 fig.update_layout(
                     **PLOT_LAYOUT,
@@ -1081,14 +1076,14 @@ elif page == "Company Comparison":
 elif page == "What-If Simulator":
     st.title("What-If Simulator")
     st.markdown(
-        '<div class="section-label"><i class="ph-magic-wand"></i> Estimate how ESG improvement affects supply chain performance</div>',
+        '<div class="section-label"><i class="ph ph-magic-wand"></i> Estimate how ESG improvement affects supply chain performance</div>',
         unsafe_allow_html=True
     )
 
     if df_raw is None:
         st.markdown("""
         <div class="info-panel">
-            <h4><i class="ph-file-xls"></i> Excel file required</h4>
+            <h4><i class="ph ph-file-xls"></i> Excel file required</h4>
             <p>Upload your ESG-SCM spreadsheet to use the What-If Simulator.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1206,7 +1201,7 @@ elif page == "Risk Alert Panel":
     if not companies:
         st.markdown("""
         <div class="info-panel">
-            <h4><i class="ph-warning"></i> No data loaded</h4>
+            <h4><i class="ph ph-warning"></i> No data loaded</h4>
             <p>Upload your n8n JSON file to view risk alerts and flags.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1248,7 +1243,7 @@ elif page == "Risk Alert Panel":
             accent="#34d399"
         ), unsafe_allow_html=True)
 
-    st.markdown('<div class="fancy-divider"><i class="ph-flag"></i></div>', unsafe_allow_html=True)
+    st.markdown('<div class="fancy-divider"><i class="ph ph-flag"></i></div>', unsafe_allow_html=True)
 
     # ESG Controversy flags
     st.subheader("ESG Controversy Flags")
@@ -1267,7 +1262,7 @@ elif page == "Risk Alert Panel":
             icon = {"High": "ph-fire", "Medium": "ph-warning", "Low": "ph-info"}.get(risk, "ph-warning")
             st.markdown(f"""
             <div class="alert-card {cls}">
-                <span class="alert-icon"><i class="{icon}"></i></span>
+                <span class="alert-icon"><i class="ph {icon}"></i></span>
                 <strong>{name}</strong>
                 &nbsp;{risk_badge(risk)}
                 <small>{note}</small>
@@ -1276,7 +1271,7 @@ elif page == "Risk Alert Panel":
     else:
         st.success("No controversy flags for current companies.")
 
-    st.markdown('<div class="fancy-divider"><i class="ph-buildings"></i></div>', unsafe_allow_html=True)
+    st.markdown('<div class="fancy-divider"><i class="ph ph-buildings"></i></div>', unsafe_allow_html=True)
 
     # Risk breakdown
     st.subheader("Company Risk Breakdown")
@@ -1296,36 +1291,36 @@ elif page == "Risk Alert Panel":
         rep_r = c.get("risk_assessment", {}).get("reputational_risks", []) or []
         fin_r = c.get("risk_assessment", {}).get("financial_risks",    []) or []
 
-        with st.expander(f"{risk_dot(risk)} {name}"):
+        with st.expander(f"{risk_dot(overall)} {name}"):
             st.markdown(risk_badge(overall), unsafe_allow_html=True)
             st.markdown("")
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.markdown('<div class="section-label"><i class="ph-gear"></i> Operational</div>', unsafe_allow_html=True)
+                st.markdown('<div class="section-label"><i class="ph ph-gear"></i> Operational</div>', unsafe_allow_html=True)
                 for r in (op_r if isinstance(op_r, list) else [op_r]):
                     st.markdown(
                         f'<div style="font-family:\'DM Sans\';font-size:0.83rem;'
-                        f'color:#8aacc8;padding:3px 0"><i class="ph-caret-right" style="font-size:0.7rem;margin-right:6px;color:#4d718f"></i>{r}</div>',
+                        f'color:#8aacc8;padding:3px 0"><i class="ph ph-caret-right" style="font-size:0.7rem;margin-right:6px;color:#4d718f"></i>{r}</div>',
                         unsafe_allow_html=True
                     )
             with col2:
-                st.markdown('<div class="section-label"><i class="ph-users"></i> Reputational</div>', unsafe_allow_html=True)
+                st.markdown('<div class="section-label"><i class="ph ph-users"></i> Reputational</div>', unsafe_allow_html=True)
                 for r in (rep_r if isinstance(rep_r, list) else [rep_r]):
                     st.markdown(
                         f'<div style="font-family:\'DM Sans\';font-size:0.83rem;'
-                        f'color:#8aacc8;padding:3px 0"><i class="ph-caret-right" style="font-size:0.7rem;margin-right:6px;color:#4d718f"></i>{r}</div>',
+                        f'color:#8aacc8;padding:3px 0"><i class="ph ph-caret-right" style="font-size:0.7rem;margin-right:6px;color:#4d718f"></i>{r}</div>',
                         unsafe_allow_html=True
                     )
             with col3:
-                st.markdown('<div class="section-label"><i class="ph-currency-dollar"></i> Financial</div>', unsafe_allow_html=True)
+                st.markdown('<div class="section-label"><i class="ph ph-currency-dollar"></i> Financial</div>', unsafe_allow_html=True)
                 for r in (fin_r if isinstance(fin_r, list) else [fin_r]):
                     st.markdown(
                         f'<div style="font-family:\'DM Sans\';font-size:0.83rem;'
-                        f'color:#8aacc8;padding:3px 0"><i class="ph-caret-right" style="font-size:0.7rem;margin-right:6px;color:#4d718f"></i>{r}</div>',
+                        f'color:#8aacc8;padding:3px 0"><i class="ph ph-caret-right" style="font-size:0.7rem;margin-right:6px;color:#4d718f"></i>{r}</div>',
                         unsafe_allow_html=True
                     )
 
-    st.markdown('<div class="fancy-divider"><i class="ph-chart-bar"></i></div>', unsafe_allow_html=True)
+    st.markdown('<div class="fancy-divider"><i class="ph ph-chart-bar"></i></div>', unsafe_allow_html=True)
 
     # Risk distribution
     st.subheader("Risk Distribution")
@@ -1341,6 +1336,7 @@ elif page == "Risk Alert Panel":
         .reindex(["High", "Medium", "Low"], fill_value=0)
         .reset_index()
     )
+    dist.columns = ["Risk", "count"]
     fig = px.bar(
         dist, x="Risk", y="count",
         color="Risk",
@@ -1359,14 +1355,14 @@ elif page == "Risk Alert Panel":
 elif page == "AI Recommendations":
     st.title("AI Recommendations")
     st.markdown(
-        '<div class="section-label"><i class="ph-robot"></i> Powered by n8n AI Agent</div>',
+        '<div class="section-label"><i class="ph ph-robot"></i> Powered by n8n AI Agent</div>',
         unsafe_allow_html=True
     )
 
     if not companies:
         st.markdown("""
         <div class="info-panel">
-            <h4><i class="ph-warning"></i> No data loaded</h4>
+            <h4><i class="ph ph-warning"></i> No data loaded</h4>
             <p>Upload your n8n JSON file to see AI-generated recommendations.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1405,7 +1401,7 @@ elif page == "AI Recommendations":
     ]
 
     st.markdown(
-        f'<div class="section-label"><i class="ph-list-checks"></i> {len(filtered)} recommendations</div>',
+        f'<div class="section-label"><i class="ph ph-list-checks"></i> {len(filtered)} recommendations</div>',
         unsafe_allow_html=True
     )
 
@@ -1444,21 +1440,21 @@ elif page == "AI Recommendations":
                 <div class="rec-card">
                     <div class="rec-card-header">
                         <div class="rec-card-title">
-                            <i class="{pri_icon}" style="color:{pri_color};margin-right:8px;font-size:1rem"></i>
+                            <i class="ph {pri_icon}" style="color:{pri_color};margin-right:8px;font-size:1rem"></i>
                             {row["Action"]}
                         </div>
-                        <span class="badge {pri_class}"><i class="{pri_icon}"></i>{pri}</span>
+                        <span class="badge {pri_class}"><i class="ph {pri_icon}"></i>{pri}</span>
                     </div>
                     <div class="rec-card-body">{row["Impact"]}</div>
                     <div class="rec-card-meta">
-                        <span class="rec-card-tag"><i class="{cat_icon}" style="margin-right:4px"></i>{row["Category"]}</span>
-                        <span class="rec-card-tag"><i class="ph-buildings" style="margin-right:4px"></i>{row["Company"]}</span>
-                        <span class="rec-card-tag"><i class="ph-clock" style="margin-right:4px"></i>{row["Timeline"]}</span>
+                        <span class="rec-card-tag"><i class="ph {cat_icon}" style="margin-right:4px"></i>{row["Category"]}</span>
+                        <span class="rec-card-tag"><i class="ph ph-buildings" style="margin-right:4px"></i>{row["Company"]}</span>
+                        <span class="rec-card-tag"><i class="ph ph-clock" style="margin-right:4px"></i>{row["Timeline"]}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-    st.markdown('<div class="fancy-divider"><i class="ph-chart-pie"></i></div>', unsafe_allow_html=True)
+    st.markdown('<div class="fancy-divider"><i class="ph ph-chart-pie"></i></div>', unsafe_allow_html=True)
 
     def colour_priority(val):
         m = {
@@ -1475,7 +1471,7 @@ elif page == "AI Recommendations":
         height=300,
     )
 
-    st.markdown('<div class="fancy-divider"><i class="ph-chart-bar"></i></div>', unsafe_allow_html=True)
+    st.markdown('<div class="fancy-divider"><i class="ph ph-chart-bar"></i></div>', unsafe_allow_html=True)
 
     col_a, col_b = st.columns(2)
     with col_a:
@@ -1529,14 +1525,14 @@ elif page == "AI Recommendations":
 elif page == "Trend Analysis":
     st.title("Trend Analysis")
     st.markdown(
-        '<div class="section-label"><i class="ph-trend-up"></i> Year-over-year performance across ESG &amp; SCM metrics</div>',
+        '<div class="section-label"><i class="ph ph-trend-up"></i> Year-over-year performance across ESG &amp; SCM metrics</div>',
         unsafe_allow_html=True
     )
 
     if df_raw is None:
         st.markdown("""
         <div class="info-panel">
-            <h4><i class="ph-file-xls"></i> Excel file required</h4>
+            <h4><i class="ph ph-file-xls"></i> Excel file required</h4>
             <p>Upload your ESG-SCM spreadsheet to see trend analysis.</p>
         </div>
         """, unsafe_allow_html=True)
