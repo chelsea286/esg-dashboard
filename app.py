@@ -612,14 +612,8 @@ def risk_badge(r):
     return f'<span class="badge {cls}"><i class="ph {icon}"></i>{r if r != "N/A" else "—"}</span>'
 
 def risk_dot(r):
-    """Phosphor icon dot indicator."""
-    icons = {
-        "High": ("ph-warning-circle", "#ef4444"),
-        "Medium": ("ph-warning", "#f59e0b"),
-        "Low": ("ph-check-circle", "#10b981"),
-    }
-    icon, color = icons.get(r, ("ph-minus", "#374151"))
-    return f'<i class="ph {icon}" style="color:{color};margin-right:7px;vertical-align:middle;font-size:0.85rem"></i>'
+    """Emoji dot indicator for expander titles."""
+    return {"High": "🔴", "Medium": "🟡", "Low": "🟢"}.get(r, "⚪")
 
 def metric_card(label, value, icon, delta=None, accent="#5ba3f5"):
     """Custom HTML metric card with icon."""
@@ -978,7 +972,7 @@ elif page == "Company Comparison":
                     norm = [v / m * 100 if m and m > 0 else 0 for v, m in zip(vals, maxv)]
                     
                     c = ACCENT_COLORS[i % len(ACCENT_COLORS)]
-                    r_rgb, g_rgb, b_rgb = int(c[1:3], 16), int(c[3:5], 16), int(c[5:7], 16)
+                    r_rgb, g_rgb, b_rgb = tuple(int(c.lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
                     
                     fig.add_trace(go.Scatterpolar(
                         r=norm + [norm[0]],
@@ -987,7 +981,7 @@ elif page == "Company Comparison":
                         name=str(row["COMPANY"]),
                         opacity=0.65,
                         line=dict(color=c, width=1.5),
-                        fillcolor=f"rgba({r_rgb},{g_rgb},{b_rgb},0.08)",
+                        fillcolor=f"rgba({r_rgb},{g_rgb},{b_rgb},0.1)",
                     ))
 
                 fig.update_layout(
@@ -1284,6 +1278,7 @@ elif page == "Risk Alert Panel":
     for c in companies:
         name    = safe(c, "analysis_metadata", "company")
         overall = safe(c, "risk_assessment", "overall_risk")
+        risk    = overall
         if overall not in risk_filter:
             continue
 
@@ -1334,9 +1329,9 @@ elif page == "Risk Alert Panel":
         risk_df["Risk"]
         .value_counts()
         .reindex(["High", "Medium", "Low"], fill_value=0)
-        .reset_index()
+        .reset_index(name="count")
+        .rename(columns={"index": "Risk"})
     )
-    dist.columns = ["Risk", "count"]
     fig = px.bar(
         dist, x="Risk", y="count",
         color="Risk",
