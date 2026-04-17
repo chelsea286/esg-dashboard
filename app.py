@@ -9,7 +9,7 @@ from plotly.subplots import make_subplots
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="ESG · SCM Intelligence",
-    page_icon="◈",
+    page_icon="🌀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -17,16 +17,26 @@ st.set_page_config(
 # ── Design System ─────────────────────────────────────────────────────────────
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 
 <style>
 /* ── Global reset & base ── */
-*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; transition: all 0.25s ease; }
 
 html, body, [data-testid="stAppViewContainer"] {
     background: #07101d !important;
     font-family: 'DM Sans', sans-serif;
     color: #c8d6e8;
 }
+
+/* ── Scrollbar & selection ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #07101d; }
+::-webkit-scrollbar-thumb { background: #1e3354; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a4a70; }
+::selection { background: rgba(91, 163, 245, 0.3); color: #e2eaf4; }
 
 /* ── Sidebar ── */
 [data-testid="stSidebar"] {
@@ -78,10 +88,11 @@ h2, h3 {
     border: 1px solid #152236;
     border-radius: 10px;
     padding: 18px 22px !important;
-    transition: border-color 0.2s;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 [data-testid="metric-container"]:hover {
     border-color: #1e4a7a;
+    box-shadow: 0 4px 20px rgba(91, 163, 245, 0.1);
 }
 [data-testid="metric-container"] [data-testid="stMetricLabel"] {
     font-family: 'DM Sans', sans-serif;
@@ -112,6 +123,10 @@ h2, h3 {
     border-bottom: 2px solid transparent;
     padding: 10px 18px;
     background: transparent !important;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+.stTabs [data-baseweb="tab"]:hover {
+    color: #7a9ab8 !important;
 }
 .stTabs [aria-selected="true"] {
     color: #5ba3f5 !important;
@@ -135,8 +150,13 @@ hr {
 [data-testid="stExpander"] {
     background: #0c1828 !important;
     border: 1px solid #152236 !important;
-    border-radius: 8px;
+    border-radius: 8px !important;
     margin-bottom: 8px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+[data-testid="stExpander"]:hover {
+    border-color: #1e3354 !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 [data-testid="stExpander"] summary {
     font-family: 'DM Sans', sans-serif;
@@ -167,14 +187,25 @@ hr {
     color: #5ba3f5;
 }
 
-/* ── Sidebar wordmark ── */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* ── ENHANCED UI COMPONENTS ────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Sidebar wordmark with icon ── */
 .sidebar-wordmark {
     font-family: 'Syne', sans-serif;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: #e2eaf4;
     letter-spacing: -0.02em;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.sidebar-wordmark i {
+    font-size: 1.4rem;
+    color: #34d399;
 }
 .sidebar-sub {
     font-family: 'DM Sans', sans-serif;
@@ -185,17 +216,161 @@ hr {
     margin-bottom: 20px;
 }
 
+/* ── Glass morphism card ── */
+.glass-card {
+    background: rgba(12, 24, 40, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(21, 34, 54, 0.8);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+.glass-card:hover {
+    border-color: rgba(30, 52, 84, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+.glass-card-glow {
+    box-shadow: 0 0 20px rgba(91, 163, 245, 0.1);
+}
+
+/* ── Custom metric card ── */
+.metric-card {
+    background: linear-gradient(135deg, rgba(12, 24, 40, 0.9) 0%, rgba(7, 16, 29, 0.95) 100%);
+    border: 1px solid #152236;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-color, #5ba3f5), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.metric-card:hover {
+    border-color: var(--accent-color, #5ba3f5);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+.metric-card:hover::before {
+    opacity: 1;
+}
+.metric-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    background: rgba(91, 163, 245, 0.1);
+    color: var(--accent-color, #5ba3f5);
+    margin-bottom: 4px;
+}
+.metric-card-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #4d718f;
+}
+.metric-card-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #e2eaf4;
+    line-height: 1;
+}
+.metric-card-delta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: #6b8aaa;
+}
+
+/* ── Icon box ── */
+.icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: transform 0.25s ease;
+}
+.icon-box:hover {
+    transform: scale(1.08);
+}
+.icon-box-blue   { background: rgba(91, 163, 245, 0.12);  color: #5ba3f5; }
+.icon-box-green  { background: rgba(52, 211, 153, 0.12); color: #34d399; }
+.icon-box-red    { background: rgba(248, 113, 113, 0.12); color: #f87171; }
+.icon-box-yellow { background: rgba(251, 191, 36, 0.12);  color: #fbbf24; }
+.icon-box-purple { background: rgba(167, 139, 250, 0.12); color: #a78bfa; }
+
+/* ── Glow text ── */
+.glow-text {
+    text-shadow: 0 0 20px currentColor;
+}
+
+/* ── Hero section ── */
+.hero-section {
+    background: linear-gradient(135deg, rgba(12, 24, 40, 0.6) 0%, rgba(7, 16, 29, 0.8) 100%);
+    border: 1px solid #152236;
+    border-radius: 16px;
+    padding: 48px 56px;
+    text-align: center;
+    margin: 20px 0 32px;
+    position: relative;
+    overflow: hidden;
+}
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(91, 163, 245, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+.hero-section h1 {
+    font-size: 2.2rem !important;
+    margin-bottom: 12px !important;
+}
+.hero-section p {
+    font-size: 0.95rem;
+    color: #4d718f;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
 /* ── Risk badge ── */
 .badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     font-family: 'DM Mono', monospace;
     font-size: 0.65rem;
     font-weight: 400;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 4px;
 }
+.badge i { font-size: 0.75rem; }
 .badge-high   { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
 .badge-medium { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
 .badge-low    { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
@@ -203,19 +378,29 @@ hr {
 
 /* ── Alert cards ── */
 .alert-card {
-    background: #0c1828;
+    background: linear-gradient(135deg, rgba(12, 24, 40, 0.85) 0%, rgba(7, 16, 29, 0.95) 100%);
+    backdrop-filter: blur(8px);
     border: 1px solid #152236;
     border-left: 3px solid;
-    border-radius: 0 8px 8px 0;
-    padding: 14px 16px;
-    margin-bottom: 10px;
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 12px;
     font-family: 'DM Sans', sans-serif;
+    transition: all 0.25s ease;
+}
+.alert-card:hover {
+    transform: translateX(4px);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2);
 }
 .alert-card-high   { border-left-color: #ef4444; }
 .alert-card-medium { border-left-color: #f59e0b; }
 .alert-card-low    { border-left-color: #10b981; }
-.alert-card strong { color: #e2eaf4; font-weight: 600; font-size: 0.88rem; }
-.alert-card small  { color: #4d718f; font-size: 0.78rem; display: block; margin-top: 4px; }
+.alert-card strong { color: #e2eaf4; font-weight: 600; font-size: 0.9rem; }
+.alert-card small  { color: #4d718f; font-size: 0.8rem; display: block; margin-top: 6px; line-height: 1.5; }
+.alert-card .alert-icon {
+    font-size: 1.1rem;
+    margin-right: 8px;
+}
 
 /* ── Section label ── */
 .section-label {
@@ -227,28 +412,50 @@ hr {
     color: #2d5070;
     margin-bottom: 14px;
     margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.section-label i {
+    font-size: 0.8rem;
+    color: #3d6282;
 }
 
 /* ── Info panel ── */
 .info-panel {
-    background: #0c1828;
+    background: linear-gradient(135deg, rgba(12, 24, 40, 0.7) 0%, rgba(7, 16, 29, 0.85) 100%);
+    backdrop-filter: blur(10px);
     border: 1px dashed #1e3354;
-    border-radius: 10px;
-    padding: 28px 32px;
+    border-radius: 12px;
+    padding: 32px 36px;
     text-align: center;
-    margin: 12px 0;
+    margin: 16px 0;
+    transition: all 0.3s ease;
+}
+.info-panel:hover {
+    border-color: #2a4a70;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 .info-panel p {
     font-family: 'DM Sans', sans-serif;
-    color: #3d6282;
-    font-size: 0.85rem;
-    margin: 6px 0 0;
+    color: #4d718f;
+    font-size: 0.88rem;
+    margin: 8px 0 0;
+    line-height: 1.6;
 }
 .info-panel h4 {
     font-family: 'Syne', sans-serif;
     color: #7a9ab8;
     font-size: 0.95rem;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.info-panel h4 i {
+    font-size: 1.2rem;
+    color: #5ba3f5;
 }
 
 /* ── Correlation strength pill ── */
@@ -261,6 +468,102 @@ hr {
     color: #5ba3f5;
     border: 1px solid rgba(91,163,245,0.2);
 }
+
+/* ── Recommendation cards ── */
+.rec-card {
+    background: rgba(12, 24, 40, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid #152236;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+.rec-card:hover {
+    border-color: #1e3354;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+}
+.rec-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.rec-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e2eaf4;
+}
+.rec-card-body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: #8aacc8;
+    line-height: 1.6;
+}
+.rec-card-meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+.rec-card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(91, 163, 245, 0.1);
+    color: #5ba3f5;
+}
+
+/* ── Data upload card ── */
+.upload-card {
+    background: linear-gradient(135deg, rgba(12, 24, 40, 0.6) 0%, rgba(7, 16, 29, 0.8) 100%);
+    border: 1px solid #152236;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+.upload-card:hover {
+    border-color: #1e3354;
+}
+.upload-card i {
+    font-size: 2rem;
+    color: #5ba3f5;
+    margin-bottom: 12px;
+}
+.upload-card h4 {
+    font-family: 'Syne', sans-serif;
+    color: #c8d6e8;
+    font-size: 0.9rem;
+    margin: 0 0 6px;
+}
+.upload-card p {
+    font-size: 0.78rem;
+    color: #4d718f;
+    margin: 0;
+}
+
+/* ── Divider with icon ── */
+.fancy-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+    color: #1e3354;
+}
+.fancy-divider::before,
+.fancy-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #152236, transparent);
+}
+.fancy-divider i {
+    font-size: 0.8rem;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -270,8 +573,8 @@ PLOT_LAYOUT = dict(
     plot_bgcolor="rgba(0,0,0,0)",
     font=dict(family="DM Sans, sans-serif", color="#8aacc8", size=12),
     title_font=dict(family="Syne, sans-serif", color="#c8d6e8", size=14),
-    xaxis=dict(gridcolor="#0e1f33", linecolor="#152236", tickcolor="#152236", tickfont=dict(size=11)),
-    yaxis=dict(gridcolor="#0e1f33", linecolor="#152236", tickcolor="#152236", tickfont=dict(size=11)),
+    xaxis=dict(gridcolor="#0e1f33", linecolor="#152236", tickcolor="#152236", tickfont=dict(size=11), zeroline=False),
+    yaxis=dict(gridcolor="#0e1f33", linecolor="#152236", tickcolor="#152236", tickfont=dict(size=11), zeroline=False),
     legend=dict(
         bgcolor="rgba(12,24,40,0.8)",
         bordercolor="#152236",
@@ -284,6 +587,7 @@ PLOT_LAYOUT = dict(
         font=dict(family="DM Mono, monospace", size=11, color="#c8d6e8"),
     ),
     margin=dict(l=16, r=16, t=44, b=16),
+    transition=dict(duration=300, easing="cubic-in-out"),
 )
 
 ACCENT_COLORS = [
@@ -302,13 +606,33 @@ def safe(d, *keys, default="N/A"):
     return d
 
 def risk_badge(r):
+    """Risk badge with Phosphor icon."""
+    icons = {"High": "ph-warning-circle", "Medium": "ph-warning", "Low": "ph-check-circle"}
+    icon = icons.get(r, "ph-minus")
     cls = {"High": "badge-high", "Medium": "badge-medium", "Low": "badge-low"}.get(r, "badge-na")
-    return f'<span class="badge {cls}">{r if r != "N/A" else "—"}</span>'
+    return f'<span class="badge {cls}"><i class="{icon}"></i>{r if r != "N/A" else "—"}</span>'
 
 def risk_dot(r):
-    """Subtle dot indicator instead of emoji circle."""
-    color = {"High": "#ef4444", "Medium": "#f59e0b", "Low": "#10b981"}.get(r, "#374151")
-    return f'<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:{color};margin-right:7px;vertical-align:middle;flex-shrink:0"></span>'
+    """Phosphor icon dot indicator."""
+    icons = {
+        "High": ("ph-warning-circle", "#ef4444"),
+        "Medium": ("ph-warning", "#f59e0b"),
+        "Low": ("ph-check-circle", "#10b981"),
+    }
+    icon, color = icons.get(r, ("ph-minus", "#374151"))
+    return f'<i class="{icon}" style="color:{color};margin-right:7px;vertical-align:middle;font-size:0.85rem"></i>'
+
+def metric_card(label, value, icon, delta=None, accent="#5ba3f5"):
+    """Custom HTML metric card with icon."""
+    delta_html = f'<div class="metric-card-delta">{delta}</div>' if delta else ''
+    return f"""
+    <div class="metric-card" style="--accent-color:{accent}">
+        <div class="metric-card-icon"><i class="{icon}"></i></div>
+        <div class="metric-card-label">{label}</div>
+        <div class="metric-card-value">{value}</div>
+        {delta_html}
+    </div>
+    """
 
 def corr_matrix(df, esg_cols, scm_cols):
     rows = []
@@ -323,17 +647,17 @@ def corr_matrix(df, esg_cols, scm_cols):
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-    <div class="sidebar-wordmark">ESG · SCM</div>
+    <div class="sidebar-wordmark"><i class="ph-duotone ph-leaf"></i> ESG · SCM</div>
     <div class="sidebar-sub">Intelligence Dashboard</div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="section-label">Data Sources</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label"><i class="ph-database"></i> Data Sources</div>', unsafe_allow_html=True)
     json_file  = st.file_uploader("n8n JSON output",  type="json",
                                    help="Post-processor output from n8n workflow")
     excel_file = st.file_uploader("Excel data file",  type=["xlsx", "xls"],
                                    help="Original ESG-SCM spreadsheet")
 
-    st.markdown('<div class="section-label" style="margin-top:24px">Navigation</div>',
+    st.markdown('<div class="section-label" style="margin-top:24px"><i class="ph-compass"></i> Navigation</div>',
                 unsafe_allow_html=True)
     page = st.radio("", [
         "Overview",
@@ -348,7 +672,8 @@ with st.sidebar:
     st.markdown("""
     <div style="margin-top:auto;padding-top:40px">
         <div style="font-family:'DM Mono',monospace;font-size:0.65rem;color:#1e3a58;letter-spacing:0.05em">
-            INDONESIA · CONSUMER GOODS<br>Food & Tobacco Sector
+            <i class="ph-map-pin" style="font-size:0.7rem"></i> INDONESIA · CONSUMER GOODS<br>
+            <span style="margin-left:14px">Food & Tobacco Sector</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -367,24 +692,22 @@ if excel_file:
     df_raw = pd.read_excel(excel_file)
     df_raw.columns = [c.strip().upper().replace(" ", "_") for c in df_raw.columns]
 
-# ── Empty state ───────────────────────────────────────────────────────────────
+# ── Empty state / Welcome screen ─────────────────────────────────────────────
 if not companies and df_raw is None:
     st.markdown("""
-    <div style="padding: 60px 0 20px">
-        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;
-                    color:#e2eaf4;letter-spacing:-0.03em;margin-bottom:8px">
-            ESG · SCM Intelligence
-        </div>
-        <div style="font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#3d6282">
-            Indonesia Consumer Goods — Food & Tobacco Sector
-        </div>
+    <div class="hero-section">
+        <i class="ph-duotone ph-chart-pie-slice" style="font-size:3rem;color:#5ba3f5;margin-bottom:16px"></i>
+        <h1>ESG · SCM Intelligence</h1>
+        <p>Indonesia Consumer Goods — Food & Tobacco Sector<br>
+           Upload your data to unlock AI-powered insights</p>
     </div>
     """, unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("""
-        <div class="info-panel">
+        <div class="upload-card">
+            <i class="ph-duotone ph-file-js"></i>
             <h4>n8n JSON Output</h4>
             <p>Upload your workflow output for AI analysis,<br>
                risk data, and recommendations.</p>
@@ -392,7 +715,8 @@ if not companies and df_raw is None:
         """, unsafe_allow_html=True)
     with c2:
         st.markdown("""
-        <div class="info-panel">
+        <div class="upload-card">
+            <i class="ph-duotone ph-file-xls"></i>
             <h4>Excel Data File</h4>
             <p>Upload your ESG-SCM spreadsheet for correlation<br>
                heatmap, what-if simulator, and trend analysis.</p>
@@ -409,7 +733,7 @@ if page == "Overview":
     st.markdown(f"""
     <div style="font-family:'DM Sans',sans-serif;font-size:0.8rem;color:#3d6282;
                 letter-spacing:0.05em;text-transform:uppercase;margin-top:-10px;margin-bottom:20px">
-        Indonesia · Food &amp; Tobacco &nbsp;·&nbsp; {len(companies)} companies analysed
+        <i class="ph-map-pin" style="font-size:0.75rem"></i> Indonesia · Food &amp; Tobacco &nbsp;·&nbsp; {len(companies)} companies analysed
     </div>
     """, unsafe_allow_html=True)
 
@@ -418,13 +742,38 @@ if page == "Overview":
             [safe(c, "risk_assessment", "overall_risk") for c in companies]
         ).value_counts()
 
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Companies Analysed", len(companies))
-        c2.metric("High Risk",    risk_counts.get("High",   0))
-        c3.metric("Medium Risk",  risk_counts.get("Medium", 0))
-        c4.metric("Low Risk",     risk_counts.get("Low",    0))
+        # Custom metric cards row
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.markdown(metric_card(
+                "Companies",
+                len(companies),
+                "ph-buildings",
+                accent="#5ba3f5"
+            ), unsafe_allow_html=True)
+        with col2:
+            st.markdown(metric_card(
+                "High Risk",
+                risk_counts.get("High", 0),
+                "ph-warning-circle",
+                accent="#ef4444"
+            ), unsafe_allow_html=True)
+        with col3:
+            st.markdown(metric_card(
+                "Medium Risk",
+                risk_counts.get("Medium", 0),
+                "ph-warning",
+                accent="#f59e0b"
+            ), unsafe_allow_html=True)
+        with col4:
+            st.markdown(metric_card(
+                "Low Risk",
+                risk_counts.get("Low", 0),
+                "ph-check-circle",
+                accent="#34d399"
+            ), unsafe_allow_html=True)
 
-        st.divider()
+        st.markdown('<div class="fancy-divider"><i class="ph-chart-line-down"></i></div>', unsafe_allow_html=True)
 
         # Overview table
         rows = []
@@ -453,7 +802,7 @@ if page == "Overview":
             height=420,
         )
 
-        st.divider()
+        st.markdown('<div class="fancy-divider"><i class="ph-note"></i></div>', unsafe_allow_html=True)
         st.subheader("Executive Summaries")
 
         for c in companies:
@@ -462,7 +811,7 @@ if page == "Overview":
             badge_cls = {"High": "badge-high", "Medium": "badge-medium",
                          "Low": "badge-low"}.get(risk, "badge-na")
 
-            with st.expander(f"{name}"):
+            with st.expander(f"{risk_dot(risk)} {name}"):
                 st.markdown(
                     f'<span class="badge {badge_cls}">{risk} Risk</span>'
                     f'&nbsp;&nbsp;<span style="font-family:\'DM Sans\';font-size:0.78rem;color:#3d6282">'
@@ -477,7 +826,7 @@ if page == "Overview":
     else:
         st.markdown("""
         <div class="info-panel">
-            <h4>No data loaded</h4>
+            <h4><i class="ph-warning"></i> No data loaded</h4>
             <p>Upload your n8n JSON file to see company overview and risk analysis.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -489,14 +838,14 @@ if page == "Overview":
 elif page == "Correlation Heatmap":
     st.title("Correlation Heatmap")
     st.markdown(
-        '<div class="section-label">ESG Dimensions vs SCM / Financial Metrics · Pearson r</div>',
+        '<div class="section-label"><i class="ph-chart-scatter"></i> ESG Dimensions vs SCM / Financial Metrics · Pearson r</div>',
         unsafe_allow_html=True
     )
 
     if df_raw is None:
         st.markdown("""
         <div class="info-panel">
-            <h4>Excel file required</h4>
+            <h4><i class="ph-file-xls"></i> Excel file required</h4>
             <p>Upload your ESG-SCM spreadsheet to generate the correlation heatmap.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -598,7 +947,7 @@ elif page == "Company Comparison":
     if df_raw is None and not companies:
         st.markdown("""
         <div class="info-panel">
-            <h4>No data loaded</h4>
+            <h4><i class="ph-warning"></i> No data loaded</h4>
             <p>Upload your Excel file and/or n8n JSON to compare companies.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -732,14 +1081,14 @@ elif page == "Company Comparison":
 elif page == "What-If Simulator":
     st.title("What-If Simulator")
     st.markdown(
-        '<div class="section-label">Estimate how ESG improvement affects supply chain performance</div>',
+        '<div class="section-label"><i class="ph-magic-wand"></i> Estimate how ESG improvement affects supply chain performance</div>',
         unsafe_allow_html=True
     )
 
     if df_raw is None:
         st.markdown("""
         <div class="info-panel">
-            <h4>Excel file required</h4>
+            <h4><i class="ph-file-xls"></i> Excel file required</h4>
             <p>Upload your ESG-SCM spreadsheet to use the What-If Simulator.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -857,7 +1206,7 @@ elif page == "Risk Alert Panel":
     if not companies:
         st.markdown("""
         <div class="info-panel">
-            <h4>No data loaded</h4>
+            <h4><i class="ph-warning"></i> No data loaded</h4>
             <p>Upload your n8n JSON file to view risk alerts and flags.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -875,12 +1224,31 @@ elif page == "Risk Alert Panel":
     medium = [c for c in companies if safe(c, "risk_assessment", "overall_risk") == "Medium"]
     low    = [c for c in companies if safe(c, "risk_assessment", "overall_risk") == "Low"]
 
-    c1, c2, c3 = st.columns(3)
-    c1.metric("High Risk",   len(high))
-    c2.metric("Medium Risk", len(medium))
-    c3.metric("Low Risk",    len(low))
+    # Custom metric cards
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown(metric_card(
+            "High Risk",
+            len(high),
+            "ph-warning-circle",
+            accent="#ef4444"
+        ), unsafe_allow_html=True)
+    with col2:
+        st.markdown(metric_card(
+            "Medium Risk",
+            len(medium),
+            "ph-warning",
+            accent="#f59e0b"
+        ), unsafe_allow_html=True)
+    with col3:
+        st.markdown(metric_card(
+            "Low Risk",
+            len(low),
+            "ph-check-circle",
+            accent="#34d399"
+        ), unsafe_allow_html=True)
 
-    st.divider()
+    st.markdown('<div class="fancy-divider"><i class="ph-flag"></i></div>', unsafe_allow_html=True)
 
     # ESG Controversy flags
     st.subheader("ESG Controversy Flags")
@@ -896,8 +1264,10 @@ elif page == "Risk Alert Panel":
             risk = safe(c, "risk_assessment", "overall_risk")
             cls  = {"High": "alert-card-high", "Medium": "alert-card-medium",
                     "Low": "alert-card-low"}.get(risk, "alert-card-high")
+            icon = {"High": "ph-fire", "Medium": "ph-warning", "Low": "ph-info"}.get(risk, "ph-warning")
             st.markdown(f"""
             <div class="alert-card {cls}">
+                <span class="alert-icon"><i class="{icon}"></i></span>
                 <strong>{name}</strong>
                 &nbsp;{risk_badge(risk)}
                 <small>{note}</small>
@@ -906,7 +1276,7 @@ elif page == "Risk Alert Panel":
     else:
         st.success("No controversy flags for current companies.")
 
-    st.divider()
+    st.markdown('<div class="fancy-divider"><i class="ph-buildings"></i></div>', unsafe_allow_html=True)
 
     # Risk breakdown
     st.subheader("Company Risk Breakdown")
@@ -926,36 +1296,36 @@ elif page == "Risk Alert Panel":
         rep_r = c.get("risk_assessment", {}).get("reputational_risks", []) or []
         fin_r = c.get("risk_assessment", {}).get("financial_risks",    []) or []
 
-        with st.expander(f"{name}"):
+        with st.expander(f"{risk_dot(risk)} {name}"):
             st.markdown(risk_badge(overall), unsafe_allow_html=True)
             st.markdown("")
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.markdown('<div class="section-label">Operational</div>', unsafe_allow_html=True)
+                st.markdown('<div class="section-label"><i class="ph-gear"></i> Operational</div>', unsafe_allow_html=True)
                 for r in (op_r if isinstance(op_r, list) else [op_r]):
                     st.markdown(
                         f'<div style="font-family:\'DM Sans\';font-size:0.83rem;'
-                        f'color:#8aacc8;padding:3px 0">· {r}</div>',
+                        f'color:#8aacc8;padding:3px 0"><i class="ph-caret-right" style="font-size:0.7rem;margin-right:6px;color:#4d718f"></i>{r}</div>',
                         unsafe_allow_html=True
                     )
             with col2:
-                st.markdown('<div class="section-label">Reputational</div>', unsafe_allow_html=True)
+                st.markdown('<div class="section-label"><i class="ph-users"></i> Reputational</div>', unsafe_allow_html=True)
                 for r in (rep_r if isinstance(rep_r, list) else [rep_r]):
                     st.markdown(
                         f'<div style="font-family:\'DM Sans\';font-size:0.83rem;'
-                        f'color:#8aacc8;padding:3px 0">· {r}</div>',
+                        f'color:#8aacc8;padding:3px 0"><i class="ph-caret-right" style="font-size:0.7rem;margin-right:6px;color:#4d718f"></i>{r}</div>',
                         unsafe_allow_html=True
                     )
             with col3:
-                st.markdown('<div class="section-label">Financial</div>', unsafe_allow_html=True)
+                st.markdown('<div class="section-label"><i class="ph-currency-dollar"></i> Financial</div>', unsafe_allow_html=True)
                 for r in (fin_r if isinstance(fin_r, list) else [fin_r]):
                     st.markdown(
                         f'<div style="font-family:\'DM Sans\';font-size:0.83rem;'
-                        f'color:#8aacc8;padding:3px 0">· {r}</div>',
+                        f'color:#8aacc8;padding:3px 0"><i class="ph-caret-right" style="font-size:0.7rem;margin-right:6px;color:#4d718f"></i>{r}</div>',
                         unsafe_allow_html=True
                     )
 
-    st.divider()
+    st.markdown('<div class="fancy-divider"><i class="ph-chart-bar"></i></div>', unsafe_allow_html=True)
 
     # Risk distribution
     st.subheader("Risk Distribution")
@@ -989,14 +1359,14 @@ elif page == "Risk Alert Panel":
 elif page == "AI Recommendations":
     st.title("AI Recommendations")
     st.markdown(
-        '<div class="section-label">Powered by n8n AI Agent</div>',
+        '<div class="section-label"><i class="ph-robot"></i> Powered by n8n AI Agent</div>',
         unsafe_allow_html=True
     )
 
     if not companies:
         st.markdown("""
         <div class="info-panel">
-            <h4>No data loaded</h4>
+            <h4><i class="ph-warning"></i> No data loaded</h4>
             <p>Upload your n8n JSON file to see AI-generated recommendations.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1035,9 +1405,60 @@ elif page == "AI Recommendations":
     ]
 
     st.markdown(
-        f'<div class="section-label">{len(filtered)} recommendations</div>',
+        f'<div class="section-label"><i class="ph-list-checks"></i> {len(filtered)} recommendations</div>',
         unsafe_allow_html=True
     )
+
+    # Display recommendations as cards in a grid
+    priority_colors = {
+        "High": ("#ef4444", "badge-high"),
+        "Medium": ("#f59e0b", "badge-medium"),
+        "Low": ("#34d399", "badge-low"),
+    }
+    priority_icons = {
+        "High": "ph-arrow-circle-up",
+        "Medium": "ph-minus-circle",
+        "Low": "ph-arrow-circle-down",
+    }
+    category_icons = {
+        "Operational": "ph-gear",
+        "Financial": "ph-currency-dollar",
+        "Environmental": "ph-leaf",
+        "Social": "ph-users",
+        "Governance": "ph-scales",
+        "N/A": "ph-question",
+    }
+
+    # Show cards in 2-column layout
+    if len(filtered) > 0:
+        card_cols = st.columns(2)
+        for idx, (_, row) in enumerate(filtered.iterrows()):
+            col = card_cols[idx % 2]
+            with col:
+                pri = row["Priority"]
+                pri_color, pri_class = priority_colors.get(pri, ("#64748b", "badge-na"))
+                pri_icon = priority_icons.get(pri, "ph-minus")
+                cat_icon = category_icons.get(row["Category"], "ph-tag")
+                
+                st.markdown(f"""
+                <div class="rec-card">
+                    <div class="rec-card-header">
+                        <div class="rec-card-title">
+                            <i class="{pri_icon}" style="color:{pri_color};margin-right:8px;font-size:1rem"></i>
+                            {row["Action"]}
+                        </div>
+                        <span class="badge {pri_class}"><i class="{pri_icon}"></i>{pri}</span>
+                    </div>
+                    <div class="rec-card-body">{row["Impact"]}</div>
+                    <div class="rec-card-meta">
+                        <span class="rec-card-tag"><i class="{cat_icon}" style="margin-right:4px"></i>{row["Category"]}</span>
+                        <span class="rec-card-tag"><i class="ph-buildings" style="margin-right:4px"></i>{row["Company"]}</span>
+                        <span class="rec-card-tag"><i class="ph-clock" style="margin-right:4px"></i>{row["Timeline"]}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+    st.markdown('<div class="fancy-divider"><i class="ph-chart-pie"></i></div>', unsafe_allow_html=True)
 
     def colour_priority(val):
         m = {
@@ -1047,13 +1468,14 @@ elif page == "AI Recommendations":
         }
         return m.get(val, "")
 
+    st.subheader("Recommendations Table")
     st.dataframe(
         filtered.style.map(colour_priority, subset=["Priority"]),
         use_container_width=True,
-        height=480,
+        height=300,
     )
 
-    st.divider()
+    st.markdown('<div class="fancy-divider"><i class="ph-chart-bar"></i></div>', unsafe_allow_html=True)
 
     col_a, col_b = st.columns(2)
     with col_a:
@@ -1107,14 +1529,14 @@ elif page == "AI Recommendations":
 elif page == "Trend Analysis":
     st.title("Trend Analysis")
     st.markdown(
-        '<div class="section-label">Year-over-year performance across ESG &amp; SCM metrics</div>',
+        '<div class="section-label"><i class="ph-trend-up"></i> Year-over-year performance across ESG &amp; SCM metrics</div>',
         unsafe_allow_html=True
     )
 
     if df_raw is None:
         st.markdown("""
         <div class="info-panel">
-            <h4>Excel file required</h4>
+            <h4><i class="ph-file-xls"></i> Excel file required</h4>
             <p>Upload your ESG-SCM spreadsheet to see trend analysis.</p>
         </div>
         """, unsafe_allow_html=True)
