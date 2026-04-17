@@ -1277,9 +1277,8 @@ elif page == "Risk Alert Panel":
 
     for c in companies:
         name    = safe(c, "analysis_metadata", "company")
-        overall = safe(c, "risk_assessment", "overall_risk")
-        risk    = overall
-        if overall not in risk_filter:
+        risk = safe(c, "risk_assessment", "overall_risk")
+        if risk not in risk_filter:
             continue
 
         op_r  = c.get("risk_assessment", {}).get("operational_risks",  []) or []
