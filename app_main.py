@@ -1286,8 +1286,8 @@ elif page == "Risk Alert Panel":
         rep_r = c.get("risk_assessment", {}).get("reputational_risks", []) or []
         fin_r = c.get("risk_assessment", {}).get("financial_risks",    []) or []
 
-        with st.expander(f"{risk_dot(risk)} {name}"):
-            st.markdown(risk_badge(risk), unsafe_allow_html=True)
+        with st.expander(f"{risk_dot(overall)} {name}"):
+            st.markdown(risk_badge(overall), unsafe_allow_html=True)
             st.markdown("")
             col1, col2, col3 = st.columns(3)
             with col1:
