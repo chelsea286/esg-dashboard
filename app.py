@@ -633,7 +633,7 @@ def corr_matrix(df, esg_cols, scm_cols):
         row = []
         for s in scm_cols:
             sub = df[[e, s]].dropna()
-            row.append(round(sub[e].corr(sub[s]), 3) if len(sub) > 2 else None)
+            row.append(round(sub[e].corr(sub[s]), 3) if len(sub) > 2 else np.nan)
         rows.append(row)
     return pd.DataFrame(rows, index=esg_cols, columns=scm_cols)
 
@@ -652,7 +652,7 @@ with st.sidebar:
 
     st.markdown('<div class="section-label" style="margin-top:24px"><i class="ph ph-compass"></i> Navigation</div>',
                 unsafe_allow_html=True)
-    page = st.radio("", [
+    page = st.radio("Navigation", [
         "Overview",
         "Correlation Heatmap",
         "Company Comparison",
@@ -791,7 +791,7 @@ if page == "Overview":
 
         st.dataframe(
             ov_df.style.map(colour_risk, subset=["Risk Level"]),
-            use_container_width=True,
+            width='stretch',
             height=420,
         )
 
@@ -901,7 +901,7 @@ elif page == "Correlation Heatmap":
         fig.update_traces(
             textfont=dict(family="DM Mono, monospace", size=11)
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         st.subheader("Strongest Correlations")
         pairs = []
@@ -925,7 +925,7 @@ elif page == "Correlation Heatmap":
         pairs_df["Direction"] = pairs_df["r"].apply(lambda x: "Positive" if x > 0 else "Negative")
         st.dataframe(
             pairs_df[["ESG", "SCM / Finance", "r", "Strength", "Direction"]],
-            use_container_width=True,
+            width='stretch',
         )
     else:
         st.info("Select at least one ESG dimension and one SCM metric.")
@@ -1001,7 +1001,7 @@ elif page == "Company Comparison":
                     height=500,
                     legend=dict(orientation="h", y=-0.12),
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
 
             # Bar comparison
             st.subheader("Side-by-Side Metric")
@@ -1020,7 +1020,7 @@ elif page == "Company Comparison":
             )
             fig2.update_layout(**PLOT_LAYOUT, showlegend=False, height=360)
             fig2.update_traces(marker_line_width=0)
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
 
             # Benchmark
             st.subheader("Benchmark vs Industry")
@@ -1058,7 +1058,7 @@ elif page == "Company Comparison":
 
                 st.dataframe(
                     bm_df.style.map(colour_status, subset=["Status"]),
-                    use_container_width=True,
+                    width='stretch',
                 )
     else:
         st.info("Upload your Excel file to use the comparison tool.")
@@ -1175,7 +1175,7 @@ elif page == "What-If Simulator":
         yaxis_title=target_choice,
         legend=dict(orientation="h", y=-0.2),
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     st.subheader("Company-level Projections")
     tbl = df_latest[["COMPANY",
@@ -1183,7 +1183,7 @@ elif page == "What-If Simulator":
                       f"{target_choice} Projected"]].copy()
     tbl["Change"]   = tbl[f"{target_choice} Projected"] - tbl[f"{target_choice} Current"]
     tbl["Change %"] = (tbl["Change"] / tbl[f"{target_choice} Current"].abs() * 100).round(2)
-    st.dataframe(tbl.round(3), use_container_width=True)
+    st.dataframe(tbl.round(3), width='stretch')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1325,13 +1325,9 @@ elif page == "Risk Alert Panel":
         "Confidence": safe(c, "analysis_metadata", "confidence_level"),
     } for c in companies])
 
-    dist = (
-        risk_df["Risk"]
-        .value_counts()
-        .reindex(["High", "Medium", "Low"], fill_value=0)
-        .reset_index(name="count")
-        .rename(columns={"index": "Risk"})
-    )
+    dist = risk_df["Risk"].value_counts().reindex(["High", "Medium", "Low"], fill_value=0).reset_index()
+    dist.columns = ["Risk", "count"]
+
     fig = px.bar(
         dist, x="Risk", y="count",
         color="Risk",
@@ -1341,7 +1337,7 @@ elif page == "Risk Alert Panel":
     fig.update_layout(**PLOT_LAYOUT, showlegend=False, height=300)
     fig.update_traces(textposition="outside", marker_line_width=0,
                       textfont=dict(family="DM Mono, monospace", size=11))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1462,7 +1458,7 @@ elif page == "AI Recommendations":
     st.subheader("Recommendations Table")
     st.dataframe(
         filtered.style.map(colour_priority, subset=["Priority"]),
-        use_container_width=True,
+        width='stretch',
         height=300,
     )
 
@@ -1486,7 +1482,7 @@ elif page == "AI Recommendations":
             textfont=dict(family="DM Mono, monospace", size=10),
             marker=dict(line=dict(color="#07101d", width=3)),
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     with col_b:
         st.subheader("By Category")
@@ -1498,7 +1494,7 @@ elif page == "AI Recommendations":
         )
         fig2.update_layout(**PLOT_LAYOUT, showlegend=False, height=280)
         fig2.update_traces(marker_line_width=0)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width='stretch')
 
     st.subheader("Priority by Company")
     pivot = filtered.groupby(["Company", "Priority"]).size().reset_index(name="Count")
@@ -1511,7 +1507,7 @@ elif page == "AI Recommendations":
     )
     fig3.update_layout(**PLOT_LAYOUT, height=360, xaxis_tickangle=-30)
     fig3.update_traces(marker_line_width=0)
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width='stretch')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1567,7 +1563,7 @@ elif page == "Trend Analysis":
         )
         fig.update_layout(**PLOT_LAYOUT, height=400, xaxis=dict(dtick=1))
         fig.update_traces(line=dict(width=1.8), marker=dict(size=6))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         # YoY table
         st.subheader("Year-over-Year Change")
@@ -1579,7 +1575,7 @@ elif page == "Trend Analysis":
             yoy_rows.append(sub)
         if yoy_rows:
             yoy_df = pd.concat(yoy_rows).round(3)
-            st.dataframe(yoy_df, use_container_width=True, height=320)
+            st.dataframe(yoy_df, width='stretch', height=320)
 
         # ESG vs SCM correlation over time
         st.subheader("ESG vs SCM — Correlation by Year")
@@ -1610,4 +1606,4 @@ elif page == "Trend Analysis":
                 fig2.update_layout(**PLOT_LAYOUT, height=380, xaxis=dict(dtick=1),
                                    yaxis_title="Pearson r")
                 fig2.update_traces(line=dict(width=1.8), marker=dict(size=6))
-                st.plotly_chart(fig2, use_container_width=True)
+                st.plotly_chart(fig2, width='stretch')
