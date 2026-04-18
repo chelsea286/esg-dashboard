@@ -81,7 +81,11 @@ def safe(d, *keys, default="N/A"):
     return d
 
 def risk_emoji(r):
-    return {"High":"🔴","Medium":"🟡","Low":"🟢"}.get(r,"⚪")
+    return {
+        "High": "●",
+        "Medium": "●",
+        "Low": "●"
+    }.get(r, "●")
 
 def corr_matrix(df, esg_cols, scm_cols):
     rows = []
