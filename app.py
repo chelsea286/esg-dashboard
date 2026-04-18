@@ -17,58 +17,12 @@ st.set_page_config(
 # ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    body, [data-testid="stAppViewContainer"] {
-        background:#07101d;
-        color:#c8d6e8;
-        font-family: 'Segoe UI', sans-serif;
-    }
-
-    [data-testid="stSidebar"]{
-        background:#050c17;
-        border-right:1px solid #132033;
-    }
-
-    .metric-card{
-        background:#0c1828;
-        border-radius:12px;
-        padding:16px 20px;
-        border-left:4px solid #3b82f6;
-        margin-bottom:8px
-    }
-
-    .alert-high{
-        background:#2a0a0a;
-        border-left:4px solid #ef4444;
-        padding:10px 14px;
-        border-radius:6px;
-        margin:4px 0
-    }
-
-    .alert-med{
-        background:#2a1a03;
-        border-left:4px solid #f59e0b;
-        padding:10px 14px;
-        border-radius:6px;
-        margin:4px 0
-    }
-
-    .section-hdr{
-        font-size:1rem;
-        font-weight:600;
-        color:#93c5fd;
-        margin:12px 0 4px;
-        border-bottom:1px solid #1f2a3a;
-        padding-bottom:4px
-    }
-
-    .stTabs [data-baseweb="tab"]{
-        font-weight:500;
-        color:#9ca3af;
-    }
-
-    .stTabs [aria-selected="true"]{
-        color:#60a5fa !important;
-    }
+    .metric-card{background:#1e1e2e;border-radius:12px;padding:16px 20px;border-left:4px solid #7c3aed;margin-bottom:8px}
+    .alert-high{background:#450a0a;border-left:4px solid #dc2626;padding:10px 14px;border-radius:6px;margin:4px 0}
+    .alert-med{background:#451a03;border-left:4px solid #f59e0b;padding:10px 14px;border-radius:6px;margin:4px 0}
+    .section-hdr{font-size:1rem;font-weight:600;color:#a78bfa;margin:12px 0 4px;border-bottom:1px solid #374151;padding-bottom:4px}
+    [data-testid="stSidebar"]{background:#0f0f1a}
+    .stTabs [data-baseweb="tab"]{font-weight:500}
 </style>
 """, unsafe_allow_html=True)
 
@@ -81,12 +35,7 @@ def safe(d, *keys, default="N/A"):
     return d
 
 def risk_emoji(r):
-    icons = {
-        "High": '<i class="ph-fill ph-warning-circle" style="color:#ef4444"></i>',
-        "Medium": '<i class="ph-fill ph-warning" style="color:#f59e0b"></i>',
-        "Low": '<i class="ph-fill ph-check-circle" style="color:#22c55e"></i>',
-    }
-    return icons.get(r, '<i class="ph ph-circle"></i>')
+    return {"High":"🔴","Medium":"🟡","Low":"🟢"}.get(r,"⚪")
 
 def corr_matrix(df, esg_cols, scm_cols):
     rows = []
