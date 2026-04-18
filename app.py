@@ -511,7 +511,6 @@ if page == "Overview":
                 "Confidence":    safe(c, "analysis_metadata", "confidence_level"),
                 "ESG Strongest": safe(c, "esg_performance", "strongest_dimension"),
                 "ESG Weakest":   safe(c, "esg_performance", "weakest_dimension"),
-                "Quality":       str(safe(c, "_quality_score", "default", 100)) + "%",
             })
         ov_df = pd.DataFrame(rows)
 
