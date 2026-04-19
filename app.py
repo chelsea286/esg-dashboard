@@ -520,6 +520,9 @@ if page == "Overview":
                  "Low":    "background-color:#081a0e;color:#22c55e"}
             return m.get(val, "")
 
+        ov_df = pd.DataFrame(rows)
+        ov_df.index = ov_df.index + 1
+        
         st.dataframe(ov_df.style.map(colour_risk, subset=["Risk"]),
                      use_container_width=True, height=450)
 
