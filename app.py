@@ -538,22 +538,33 @@ if page == "Overview":
         for c in companies:
             name = safe(c,"analysis_metadata","company")
             risk = safe(c,"risk_assessment","overall_risk")
-            badge_cls = {"High": "pill-red", "Medium": "pill-amber", "Low": "pill-green"}.get(risk, "pill-blue")
-            icon_cls  = {"High": "fa-circle-exclamation", "Medium": "fa-triangle-exclamation", "Low": "fa-circle-check"}.get(risk, "fa-circle")
         
+            # badge color logic (same as your system)
+            if risk == "High":
+                badge = '<span style="background:#450a0a;color:#fca5a5;padding:4px 10px;border-radius:6px;font-size:0.75rem;">High Risk</span>'
+            elif risk == "Medium":
+                badge = '<span style="background:#451a03;color:#fcd34d;padding:4px 10px;border-radius:6px;font-size:0.75rem;">Medium Risk</span>'
+            else:
+                badge = '<span style="background:#052e16;color:#6ee7b7;padding:4px 10px;border-radius:6px;font-size:0.75rem;">Low Risk</span>'
+        
+            # card container
             st.markdown(f"""
-            <div style="background:#0c1828;
-                        border:1px solid #1f2a3a;
-                        border-radius:10px;
-                        padding:14px;
-                        margin-bottom:12px;">
-                <div style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">
-                    {name} — {risk} Risk
+            <div style="
+                background:#0c1828;
+                border:1px solid #1f2a3a;
+                border-radius:10px;
+                padding:16px;
+                margin-bottom:14px;
+            ">
+                <div style="font-weight:600;font-size:1rem;margin-bottom:8px;">
+                    {name}
+                </div>
+                {badge}
+                <div style="margin-top:10px; line-height:1.5;">
+                    {safe(c,"executive_summary")}
                 </div>
             </div>
             """, unsafe_allow_html=True)
-        
-            st.write(safe(c,"executive_summary"))
         
     else:
         st.info("Upload your n8n JSON to see company overview.", icon="ℹ️")
