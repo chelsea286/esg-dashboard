@@ -535,11 +535,15 @@ if page == "Overview":
         #     with st.expander(f"{name}  —  {risk} Risk"):
         #         st.markdown(f'<span class="stat-pill {badge_cls}"><i class="fa-solid {icon_cls}"></i> {risk} Risk</span>', unsafe_allow_html=True)
         #         st.write(safe(c, "executive_summary"))
-        for c in companies:
+        cols = st.columns(3)
+
+        for i, c in enumerate(companies):
+            col = cols[i % 3]
+        
             name = safe(c,"analysis_metadata","company")
             risk = safe(c,"risk_assessment","overall_risk")
         
-            # badge color logic (same as your system)
+            # keep your exact color system
             if risk == "High":
                 badge = '<span style="background:#450a0a;color:#fca5a5;padding:4px 10px;border-radius:6px;font-size:0.75rem;">High Risk</span>'
             elif risk == "Medium":
@@ -547,24 +551,25 @@ if page == "Overview":
             else:
                 badge = '<span style="background:#052e16;color:#6ee7b7;padding:4px 10px;border-radius:6px;font-size:0.75rem;">Low Risk</span>'
         
-            # card container
-            st.markdown(f"""
-            <div style="
-                background:#0c1828;
-                border:1px solid #1f2a3a;
-                border-radius:10px;
-                padding:16px;
-                margin-bottom:14px;
-            ">
-                <div style="font-weight:600;font-size:1rem;margin-bottom:8px;">
-                    {name}
+            with col:
+                st.markdown(f"""
+                <div style="
+                    background:#0c1828;
+                    border:1px solid #1f2a3a;
+                    border-radius:10px;
+                    padding:16px;
+                    margin-bottom:14px;
+                    min-height:180px;
+                ">
+                    <div style="font-weight:600;font-size:0.95rem;margin-bottom:8px;">
+                        {name}
+                    </div>
+                    {badge}
+                    <div style="margin-top:10px;font-size:0.85rem;line-height:1.5;">
+                        {safe(c,"executive_summary")}
+                    </div>
                 </div>
-                {badge}
-                <div style="margin-top:10px; line-height:1.5;">
-                    {safe(c,"executive_summary")}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
         
     else:
         st.info("Upload your n8n JSON to see company overview.", icon="ℹ️")
