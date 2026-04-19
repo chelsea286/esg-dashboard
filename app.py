@@ -363,6 +363,11 @@ hr {
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+def df_display(df):
+    df = df.copy()
+    df.index = range(1, len(df) + 1)
+    return df
+    
 def safe(d, *keys, default="N/A"):
     for k in keys:
         if not isinstance(d, dict): return default
@@ -655,11 +660,8 @@ elif page == "Correlation Heatmap":
         pairs_df["Strength"]  = pairs_df["r"].apply(interp)
         pairs_df["Direction"] = pairs_df["r"].apply(lambda x: "Positive" if x > 0 else "Negative")
         
-        ov_df = pd.DataFrame(rows)
-        ov_df.index = ov_df.index + 1
-        
-        st.dataframe(pairs_df[["ESG", "SCM / Finance", "r", "Strength", "Direction"]],
-                     use_container_width=True)
+        df_temp = df_display(pairs_df[["ESG", "SCM / Finance", "r", "Strength", "Direction"]])
+        st.dataframe(df_temp, use_container_width=True)
     else:
         st.info("Select at least one ESG dimension and one SCM metric.", icon="ℹ️")
 
@@ -759,8 +761,6 @@ elif page == "Company Comparison":
                         "Status":    status
                     })
             if bm_rows:
-                ov_df = pd.DataFrame(rows)
-                ov_df.index = ov_df.index + 1
                 st.dataframe(pd.DataFrame(bm_rows), use_container_width=True)
     else:
         st.info("Upload your Excel file to use the comparison tool.", icon="ℹ️")
@@ -875,8 +875,6 @@ elif page == "What-If Simulator":
     tbl["Change"]   = tbl[f"{target_choice} Projected"] - tbl[f"{target_choice} Current"]
     tbl["Change %"] = (tbl["Change"] / tbl[f"{target_choice} Current"].abs() * 100).round(2)
     tbl = tbl.round(3)
-    ov_df = pd.DataFrame(rows)
-    ov_df.index = ov_df.index + 1
     st.dataframe(tbl, use_container_width=True)
 
 
@@ -1034,8 +1032,6 @@ elif page == "AI Recommendations":
              "Medium": "background-color:#1a1008;color:#f59e0b",
              "Low":    "background-color:#081a0e;color:#22c55e"}
         return m.get(val, "")
-    ov_df = pd.DataFrame(rows)
-    ov_df.index = ov_df.index + 1
     st.dataframe(filtered.style.map(colour_priority, subset=["Priority"]),
                  use_container_width=True, height=500)
 
@@ -1138,8 +1134,6 @@ elif page == "Trend Analysis":
             yoy_rows.append(sub)
         if yoy_rows:
             yoy_df = pd.concat(yoy_rows).round(3)
-            ov_df = pd.DataFrame(rows)
-            ov_df.index = ov_df.index + 1
             st.dataframe(yoy_df, use_container_width=True, height=340)
 
         section_label("ESG vs SCM — Correlation by Year")
