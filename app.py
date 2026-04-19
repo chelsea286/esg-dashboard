@@ -538,6 +538,8 @@ if page == "Overview":
         for c in companies:
             name = safe(c,"analysis_metadata","company")
             risk = safe(c,"risk_assessment","overall_risk")
+            badge_cls = {"High": "pill-red", "Medium": "pill-amber", "Low": "pill-green"}.get(risk, "pill-blue")
+            icon_cls  = {"High": "fa-circle-exclamation", "Medium": "fa-triangle-exclamation", "Low": "fa-circle-check"}.get(risk, "fa-circle")
         
             st.markdown(f"""
             <div style="background:#0c1828;
