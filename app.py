@@ -761,7 +761,8 @@ elif page == "Company Comparison":
                         "Status":    status
                     })
             if bm_rows:
-                st.dataframe(pd.DataFrame(bm_rows), use_container_width=True)
+                df_temp = df_display(pd.DataFrame(bm_rows))
+                st.dataframe(df_temp, use_container_width=True)
     else:
         st.info("Upload your Excel file to use the comparison tool.", icon="ℹ️")
 
@@ -875,7 +876,7 @@ elif page == "What-If Simulator":
     tbl["Change"]   = tbl[f"{target_choice} Projected"] - tbl[f"{target_choice} Current"]
     tbl["Change %"] = (tbl["Change"] / tbl[f"{target_choice} Current"].abs() * 100).round(2)
     tbl = tbl.round(3)
-    st.dataframe(tbl, use_container_width=True)
+    st.dataframe(df_display(tbl), use_container_width=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1032,7 +1033,9 @@ elif page == "AI Recommendations":
              "Medium": "background-color:#1a1008;color:#f59e0b",
              "Low":    "background-color:#081a0e;color:#22c55e"}
         return m.get(val, "")
-    st.dataframe(filtered.style.map(colour_priority, subset=["Priority"]),
+    df_temp = df_display(filtered)
+
+    st.dataframe(df_temp.style.map(colour_priority, subset=["Priority"]),
                  use_container_width=True, height=500)
 
     st.divider()
@@ -1134,7 +1137,7 @@ elif page == "Trend Analysis":
             yoy_rows.append(sub)
         if yoy_rows:
             yoy_df = pd.concat(yoy_rows).round(3)
-            st.dataframe(yoy_df, use_container_width=True, height=340)
+            st.dataframe(df_display(yoy_df), use_container_width=True, height=340)
 
         section_label("ESG vs SCM — Correlation by Year")
         ESG_C = [c for c in ["ESG_SCORE", "EMISSIONS_SCORE"] if c in df_raw.columns]
