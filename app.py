@@ -535,20 +535,23 @@ if page == "Overview":
         #     with st.expander(f"{name}  —  {risk} Risk"):
         #         st.markdown(f'<span class="stat-pill {badge_cls}"><i class="fa-solid {icon_cls}"></i> {risk} Risk</span>', unsafe_allow_html=True)
         #         st.write(safe(c, "executive_summary"))
-    st.markdown(f"""
-<div style="background:#0c1828;
-            border-left:4px solid #3b82f6;
-            border-radius:10px;
-            padding:14px;
-            margin-bottom:12px;">
-    <div style="font-weight:600; font-size:1rem;">
-        {name}
-    </div>
-    <div style="font-size:0.8rem; color:#94a3b8;">
-        {risk} Risk
-    </div>
-</div>
-""", unsafe_allow_html=True)
+        for c in companies:
+        name = safe(c,"analysis_metadata","company")
+        risk = safe(c,"risk_assessment","overall_risk")
+        st.markdown(f"""
+            <div style="background:#0c1828;
+                        border-left:4px solid #3b82f6;
+                        border-radius:10px;
+                        padding:14px;
+                        margin-bottom:12px;">
+                <div style="font-weight:600; font-size:1rem;">
+                    {name}
+                </div>
+                <div style="font-size:0.8rem; color:#94a3b8;">
+                    {risk} Risk
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
     else:
         st.info("Upload your n8n JSON to see company overview.", icon="ℹ️")
 
