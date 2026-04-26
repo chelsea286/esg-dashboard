@@ -700,6 +700,7 @@ elif page == "Company Comparison":
                 )
                 
                 # ✅ Step 3: get latest row
+                st.write("COLUMNS:", df_raw.columns.tolist())
                 df_latest = df_raw.groupby("COMPANY").last().reset_index()
                 # st.write("ALL COMPANIES IN df_latest:", df_latest["COMPANY"].unique())
             else:
