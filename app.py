@@ -462,8 +462,29 @@ if json_file:
     summary   = raw.get("processing_summary", {})
 
 if excel_file:
+    # df_raw = pd.read_excel(excel_file)
+    # df_raw.columns = [c.strip().upper().replace(" ", "_") for c in df_raw.columns]
     df_raw = pd.read_excel(excel_file)
+
+    # normalize column names
     df_raw.columns = [c.strip().upper().replace(" ", "_") for c in df_raw.columns]
+    
+    # 🔥 FIX: detect correct company column
+    if "COMPANY" not in df_raw.columns:
+        possible_cols = ["COMPANY_NAME", "NAME", "FIRM", "ISSUER", "CODE"]
+        
+        found = None
+        for col in possible_cols:
+            if col in df_raw.columns:
+                found = col
+                break
+    
+        if found:
+            df_raw = df_raw.rename(columns={found: "COMPANY"})
+        else:
+            st.error("❌ COMPANY column not found in Excel")
+            st.write("Available columns:", df_raw.columns.tolist())
+            st.stop()
 
 # ── No data ───────────────────────────────────────────────────────────────────
 if not companies and df_raw is None:
@@ -700,7 +721,6 @@ elif page == "Company Comparison":
                 )
                 
                 # ✅ Step 3: get latest row
-                st.write("COLUMNS:", df_raw.columns.tolist())
                 df_latest = df_raw.groupby("COMPANY").last().reset_index()
                 # st.write("ALL COMPANIES IN df_latest:", df_latest["COMPANY"].unique())
             else:
