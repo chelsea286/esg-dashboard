@@ -726,10 +726,22 @@ elif page == "Company Comparison":
                         if c in df_raw.columns]
             metric = st.selectbox("Select metric", num_cols)
             df_bar = df_sel[["COMPANY", metric]].copy()
+
+            # Convert to numeric
             df_bar[metric] = pd.to_numeric(df_bar[metric], errors="coerce")
-            fig2 = px.bar(df_bar, x="COMPANY", y=metric, color="COMPANY",
-                          title=f"{metric} — Company Comparison",
-                          color_discrete_sequence=px.colors.qualitative.Vivid)
+            
+            # 🔥 IMPORTANT FIX: keep missing companies
+            df_bar[metric] = df_bar[metric].fillna(0)
+            
+            # Optional: label missing
+            df_bar["label"] = df_bar[metric].apply(lambda x: "No Data" if x == 0 else round(x,2))
+            fig2 = px.bar(
+                df_bar,
+                x="COMPANY",
+                y=metric,
+                color="COMPANY",
+                text="label"   # 🔥 show "No Data"
+            )
             fig2.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
