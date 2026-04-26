@@ -683,7 +683,13 @@ elif page == "Company Comparison":
 
         if sel:
             if "YEAR" in df_raw.columns:
-                df_latest = df_raw.sort_values("YEAR").groupby("COMPANY").last().reset_index()
+                # df_latest = df_raw.sort_values("YEAR").groupby("COMPANY").last().reset_index()
+                df_latest = (
+                    df_raw.sort_values("YEAR")
+                    .groupby("COMPANY")
+                    .apply(lambda x: x.ffill().iloc[-1])
+                    .reset_index()
+                )
             else:
                 df_latest = df_raw.copy()
             df_sel = df_latest[df_latest["COMPANY"].isin(sel)]
