@@ -684,13 +684,23 @@ elif page == "Company Comparison":
         if sel:
             if "YEAR" in df_raw.columns:
                 # df_latest = df_raw.sort_values("YEAR").groupby("COMPANY").last().reset_index()
-                df_latest = (
-                    df_raw.sort_values("YEAR")
-                    .groupby("COMPANY")
-                    .apply(lambda x: x.ffill().iloc[-1])
-                    .reset_index()
-                )
-                st.write("ALL COMPANIES IN df_latest:", df_latest["COMPANY"].unique())
+                # df_latest = (
+                #     df_raw.sort_values("YEAR")
+                #     .groupby("COMPANY")
+                #     .apply(lambda x: x.ffill().iloc[-1])
+                #     .reset_index()
+                # )
+                # ✅ Step 1: sort properly
+                df_raw = df_raw.sort_values(["COMPANY", "YEAR"])
+                
+                # ✅ Step 2: fill missing values (forward + backward)
+                df_raw = df_raw.groupby("COMPANY").apply(
+                    lambda x: x.ffill().bfill()
+                ).reset_index(drop=True)
+                
+                # ✅ Step 3: take latest available row per company
+                df_latest = df_raw.groupby("COMPANY").last().reset_index()
+                # st.write("ALL COMPANIES IN df_latest:", df_latest["COMPANY"].unique())
             else:
                 df_latest = df_raw.copy()
             df_sel = df_latest[df_latest["COMPANY"].isin(sel)]
