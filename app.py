@@ -690,6 +690,7 @@ elif page == "Company Comparison":
                     .apply(lambda x: x.ffill().iloc[-1])
                     .reset_index()
                 )
+                st.write("ALL COMPANIES IN df_latest:", df_latest["COMPANY"].unique())
             else:
                 df_latest = df_raw.copy()
             df_sel = df_latest[df_latest["COMPANY"].isin(sel)]
