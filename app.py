@@ -1081,7 +1081,7 @@ elif page == "AI Recommendations":
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PAGE: TREND ANALYSIS
+# PAGE: TREND ANALYSIS (FIXED)
 # ══════════════════════════════════════════════════════════════════════════════
 elif page == "Trend Analysis":
     page_header("fa-chart-line", "Yearly Trend Analysis",
@@ -1095,8 +1095,11 @@ elif page == "Trend Analysis":
         st.error("Excel file must have YEAR and COMPANY columns.", icon="🚫")
         st.stop()
 
+    # ── CLEAN DATA ───────────────────────────────────────────────
+    df_raw["COMPANY"] = df_raw["COMPANY"].ffill()
     df_raw["YEAR"] = pd.to_numeric(df_raw["YEAR"], errors="coerce")
-    company_list   = sorted(df_raw["COMPANY"].dropna().unique().tolist())
+
+    company_list = sorted(df_raw["COMPANY"].dropna().unique().tolist())
 
     col1, col2 = st.columns(2)
     sel_companies = col1.multiselect("Companies", company_list, default=company_list[:4])
@@ -1109,74 +1112,108 @@ elif page == "Trend Analysis":
 
     sel_metric = col2.selectbox("Metric", TREND_METRICS)
 
+    # ── MAIN LOGIC ───────────────────────────────────────────────
     if sel_companies and sel_metric:
-    # ALWAYS start clean
+
         df_trend = df_raw.copy()
-    
-        # then filter
         df_trend = df_trend[df_trend["COMPANY"].isin(sel_companies)]
-    
-        # then select columns
         df_trend = df_trend[["COMPANY", "YEAR", sel_metric]].copy()
-    
-        # type cleaning
-        df_trend["YEAR"] = pd.to_numeric(df_trend["YEAR"], errors="coerce")
+
         df_trend[sel_metric] = pd.to_numeric(df_trend[sel_metric], errors="coerce")
-    
-        # final cleanup
+
         df_trend = df_trend.dropna(subset=["COMPANY", "YEAR"]).sort_values(["COMPANY", "YEAR"])
 
+        # DEBUG (optional)
+        # st.write(df_trend.groupby("COMPANY")["YEAR"].nunique())
+
+        # ── TREND CHART ───────────────────────────────────────────
         section_label(f"{sel_metric} Over Time")
-        fig = px.line(df_trend, x="YEAR", y=sel_metric, color="COMPANY",
-                      markers=True, title=f"{sel_metric} — Historical Trend",
-                      color_discrete_sequence=px.colors.qualitative.Vivid)
+
+        fig = px.line(
+            df_trend,
+            x="YEAR",
+            y=sel_metric,
+            color="COMPANY",
+            markers=True,
+            title=f"{sel_metric} — Historical Trend",
+            color_discrete_sequence=px.colors.qualitative.Vivid
+        )
+
+        fig.update_xaxes(type="category")
+
         fig.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(color="#e8edf8", family="DM Sans"),
-            height=420, xaxis=dict(dtick=1)
+            height=420
         )
+
         st.plotly_chart(fig, use_container_width=True)
 
+        # ── YOY CALCULATION (FIXED) ───────────────────────────────
         section_label("Year-over-Year Change")
-        yoy_rows = []
-        for comp in sel_companies:
-            sub = df_trend[df_trend["COMPANY"] == comp].sort_values("YEAR")
-            sub = sub.copy()
-            sub["YoY Change"] = sub[sel_metric].diff()
-            sub["YoY %"]      = sub[sel_metric].pct_change() * 100
-            yoy_rows.append(sub)
-        if yoy_rows:
-            yoy_df = pd.concat(yoy_rows).round(3)
+
+        yoy_df = (
+            df_trend
+            .sort_values(["COMPANY", "YEAR"])
+            .groupby("COMPANY")
+            .apply(lambda x: x.assign(
+                YoY_Change=x[sel_metric].diff(),
+                YoY_Percent=x[sel_metric].pct_change() * 100
+            ))
+            .reset_index(drop=True)
+        )
+
+        yoy_df = yoy_df.round(3)
+
+        if yoy_df["YoY_Change"].isna().all():
+            st.warning("No YoY data available. Check if multiple years exist per company.")
+        else:
             st.dataframe(df_display(yoy_df), use_container_width=True, height=340)
 
+        # ── CORRELATION BY YEAR ───────────────────────────────────
         section_label("ESG vs SCM — Correlation by Year")
+
         ESG_C = [c for c in ["ESG_SCORE", "EMISSIONS_SCORE"] if c in df_raw.columns]
         SCM_C = [c for c in ["CASH_CONVERSION_CYCLE", "INVENTORY_TURNOVER"] if c in df_raw.columns]
 
         if ESG_C and SCM_C:
             corr_by_year = []
+
             for yr in sorted(df_raw["YEAR"].dropna().unique()):
                 sub = df_raw[df_raw["YEAR"] == yr]
+
                 for e in ESG_C:
                     for s in SCM_C:
                         vals = sub[[e, s]].apply(pd.to_numeric, errors="coerce").dropna()
+
                         if len(vals) > 2:
                             corr_by_year.append({
                                 "Year": int(yr),
                                 "Pair": f"{e} vs {s}",
-                                "r":    round(vals[e].corr(vals[s]), 3)
+                                "r": round(vals[e].corr(vals[s]), 3)
                             })
+
             if corr_by_year:
                 cy_df = pd.DataFrame(corr_by_year)
-                fig2  = px.line(cy_df, x="Year", y="r", color="Pair", markers=True,
-                                title="ESG–SCM Correlation Evolution Over Time",
-                                color_discrete_sequence=px.colors.qualitative.Pastel)
+
+                fig2 = px.line(
+                    cy_df,
+                    x="Year",
+                    y="r",
+                    color="Pair",
+                    markers=True,
+                    title="ESG–SCM Correlation Evolution Over Time",
+                    color_discrete_sequence=px.colors.qualitative.Pastel
+                )
+
                 fig2.add_hline(y=0, line_dash="dash", line_color="#4f6180", opacity=0.7)
+
                 fig2.update_layout(
                     paper_bgcolor="rgba(0,0,0,0)",
                     plot_bgcolor="rgba(0,0,0,0)",
                     font=dict(color="#e8edf8", family="DM Sans"),
                     height=380
                 )
+
                 st.plotly_chart(fig2, use_container_width=True)
