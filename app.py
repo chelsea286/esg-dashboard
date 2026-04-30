@@ -814,8 +814,7 @@ elif page == "What-If Simulator":
     r = df_sim["_esg"].corr(df_sim[tgt_col])
 
     if "YEAR" in df_sim.columns:
-        df_latest = df_raw.copy()  
-        # df_sim.sort_values("YEAR").groupby("COMPANY").last().reset_index()
+        df_latest = df_sim.sort_values("YEAR").groupby("COMPANY").last().reset_index()
     else:
         df_latest = df_sim.copy()
 
@@ -1111,9 +1110,20 @@ elif page == "Trend Analysis":
     sel_metric = col2.selectbox("Metric", TREND_METRICS)
 
     if sel_companies and sel_metric:
-        df_trend = df_raw[df_raw["COMPANY"].isin(sel_companies)][["COMPANY", "YEAR", sel_metric]].copy()
-        df_trend["YEAR"]      = pd.to_numeric(df_trend["YEAR"], errors="coerce")
-        df_trend[sel_metric]  = pd.to_numeric(df_trend[sel_metric], errors="coerce")
+    # ALWAYS start clean
+        df_trend = df_raw.copy()
+    
+        # then filter
+        df_trend = df_trend[df_trend["COMPANY"].isin(sel_companies)]
+    
+        # then select columns
+        df_trend = df_trend[["COMPANY", "YEAR", sel_metric]].copy()
+    
+        # type cleaning
+        df_trend["YEAR"] = pd.to_numeric(df_trend["YEAR"], errors="coerce")
+        df_trend[sel_metric] = pd.to_numeric(df_trend[sel_metric], errors="coerce")
+    
+        # final cleanup
         df_trend = df_trend.dropna(subset=["COMPANY", "YEAR"]).sort_values(["COMPANY", "YEAR"])
 
         section_label(f"{sel_metric} Over Time")
