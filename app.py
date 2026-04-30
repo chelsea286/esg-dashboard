@@ -814,7 +814,8 @@ elif page == "What-If Simulator":
     r = df_sim["_esg"].corr(df_sim[tgt_col])
 
     if "YEAR" in df_sim.columns:
-        df_latest = df_sim.sort_values("YEAR").groupby("COMPANY").last().reset_index()
+        df_latest = df_raw.copy()  
+        # df_sim.sort_values("YEAR").groupby("COMPANY").last().reset_index()
     else:
         df_latest = df_sim.copy()
 
